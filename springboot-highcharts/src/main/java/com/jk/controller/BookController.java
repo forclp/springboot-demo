@@ -48,9 +48,9 @@ public class BookController {
     public List<Map<String,Object>> queryBook(){
         List<Map<String,Object>> list=bookService.queryBook();
         List<Map<String,Object>> list1=new ArrayList<>();
-        System.out.println(list);
+       
         for(Map<String,Object> map1:list){
-
+           System.out.println("11111");
             Map<String,Object> map=new HashMap<>();
             Integer  object = Integer.parseInt(map1.get("类型").toString()) ;
               if(object==1){
