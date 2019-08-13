@@ -51,6 +51,7 @@ public class BookController {
        
         for(Map<String,Object> map1:list){
            System.out.println("11111");
+           System.out.println("测试");
             Map<String,Object> map=new HashMap<>();
             Integer  object = Integer.parseInt(map1.get("类型").toString()) ;
               if(object==1){
