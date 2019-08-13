@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jk.dao.BookMapper" >
+  <resultMap id="BaseResultMap" type="com.jk.model.Book" >
+    <id column="bookid" property="bookid" jdbcType="INTEGER" />
+    <result column="bookname" property="bookname" jdbcType="VARCHAR" />
+    <result column="price" property="price" jdbcType="DOUBLE" />
+    <result column="booktype" property="booktype" jdbcType="INTEGER" />
+    <result column="des" property="des" jdbcType="VARCHAR" />
+    <result column="bookdate" property="bookdate" jdbcType="DATE" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    bookid, bookname, price, booktype, des, bookdate
+  </sql>
+
+
+  <select id="queryBook" resultMap="BaseResultMap" >
+
+   select * from t_book
+  <where>
+     <if test="book.startdate!=null">
+       bookdate &gt;= #{book.startdate}
+     </if>
+    <if test="book.enddate!=null">
+       bookdate &lt;= #{book.enddate}
+     </if>
+
+  </where>
+   limit #{sta},#{rows}
+
+  </select>
+
+  <select id="queryCount" resultType="long" >
+   select count(*) from t_book
+
+  </select>
+
+<delete id="deleteBook">
+
+delete from t_book where bookid in(${ids})
+
+</delete>
+
+<select id="toUpdateBook" resultMap="BaseResultMap">
+
+select * from t_book where bookid=#{bookid}
+</select>
+
+
+
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_book
+    where bookid = #{bookid,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_book
+    where bookid = #{bookid,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.jk.model.Book" >
+    insert into t_book (bookid, bookname, price, 
+      booktype, des, bookdate
+      )
+    values (#{bookid,jdbcType=INTEGER}, #{bookname,jdbcType=VARCHAR}, #{price,jdbcType=DOUBLE}, 
+      #{booktype,jdbcType=INTEGER}, #{des,jdbcType=VARCHAR}, #{bookdate,jdbcType=DATE}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.jk.model.Book" >
+    insert into t_book
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="bookid != null" >
+        bookid,
+      </if>
+      <if test="bookname != null" >
+        bookname,
+      </if>
+      <if test="price != null" >
+        price,
+      </if>
+      <if test="booktype != null" >
+        booktype,
+      </if>
+      <if test="des != null" >
+        des,
+      </if>
+      <if test="bookdate != null" >
+        bookdate,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="bookid != null" >
+        #{bookid,jdbcType=INTEGER},
+      </if>
+      <if test="bookname != null" >
+        #{bookname,jdbcType=VARCHAR},
+      </if>
+      <if test="price != null" >
+        #{price,jdbcType=DOUBLE},
+      </if>
+      <if test="booktype != null" >
+        #{booktype,jdbcType=INTEGER},
+      </if>
+      <if test="des != null" >
+        #{des,jdbcType=VARCHAR},
+      </if>
+      <if test="bookdate != null" >
+        #{bookdate,jdbcType=DATE},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.jk.model.Book" >
+    update t_book
+    <set >
+      <if test="bookname != null" >
+        bookname = #{bookname,jdbcType=VARCHAR},
+      </if>
+      <if test="price != null" >
+        price = #{price,jdbcType=DOUBLE},
+      </if>
+      <if test="booktype != null" >
+        booktype = #{booktype,jdbcType=INTEGER},
+      </if>
+      <if test="des != null" >
+        des = #{des,jdbcType=VARCHAR},
+      </if>
+      <if test="bookdate != null" >
+        bookdate = #{bookdate,jdbcType=DATE},
+      </if>
+    </set>
+    where bookid = #{bookid,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.jk.model.Book" >
+    update t_book
+    set bookname = #{bookname,jdbcType=VARCHAR},
+      price = #{price,jdbcType=DOUBLE},
+      booktype = #{booktype,jdbcType=INTEGER},
+      des = #{des,jdbcType=VARCHAR},
+      bookdate = #{bookdate,jdbcType=DATE}
+    where bookid = #{bookid,jdbcType=INTEGER}
+  </update>
+</mapper>

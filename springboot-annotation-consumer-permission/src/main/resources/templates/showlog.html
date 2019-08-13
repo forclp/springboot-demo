@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" xmlns:th="http://www.thymeleaf.org">
+    <title>Title</title>
+    <script src="../js/js/jquery-1.8.0.js"></script>
+    <link rel="stylesheet" type="text/css" href="../js/js/easyui-1.7.0/themes/default/easyui.css">
+    <link rel="stylesheet" type="text/css" href="../js/js/easyui-1.7.0/themes/icon.css">
+    <link rel="stylesheet" type="text/css" href="../js/js/easyui-1.7.0/demo.css">
+    <script type="text/javascript" src="../js/js/easyui-1.7.0/jquery.min.js"></script>
+    <script type="text/javascript" src="../js/js/easyui-1.7.0/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="../js/js/easyui-1.7.0/plugins/jquery.datagrid.js"></script>
+</head>
+<body>
+<div id="p1" class="easyui-panel" title="条件查询"
+     style="width:1150px;height:150px;padding:10px;background:#fafafa;"
+     data-options="iconCls:'icon-save',closable:true,
+                 collapsible:true,minimizable:true,maximizable:true">
+    <form>
+        日志名称:<input class="easyui-textbox" name="logname" data-options="iconCls:'icon-search'"  style="width:300px">
+        <a id="btn" href="javaScript:queryUs3()"  class="easyui-linkbutton"  data-options="iconCls:'icon-search'">查询</a>
+    </form>
+</div>
+<table id="dg3"></table>
+<div id="divid"></div>
+<script type="text/javascript">
+    $(function(){
+        queryUs3();
+    })
+    function queryUs3(){
+        $('#dg3').datagrid({
+            url:'../user/querlog',
+            fitColumns:true,
+            loadMsg:"玩命加载中",
+            striped:true,
+            method:"post",
+            rownumbers:true,
+            ctrlSelect:true,
+            checkOnSelect:false,
+            pagination:true,
+            pageNumber:1,
+            pageSize:2,
+            remoteSort: false,
+            pageList:[2,4,10,20,50],
+            columns:[
+                [
+                    {field:'logid',checkbox:true,title:'日志编号',width:100},
+                    {field:'logname',title:'日志名',width:100},
+                    {field:'logip',title:'IP',width:100},
+                    {field:'logtime',title:'产生时间',width:100},
+                    {field:'requerpath',title:'访问方法',width:100},
+                    {field:'username',title:'用户名',width:100}
+                ]
+            ],
+            queryParams:{
+                'logname':$("[name='logname']").val()
+            }
+        });
+    }
+</script>
+</body>
+</html>

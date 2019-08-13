@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jk.dao.UserMapper" >
+  <resultMap id="BaseResultMap" type="com.jk.model.User" >
+    <id column="userid" property="userid" jdbcType="INTEGER" />
+    <result column="username" property="username" jdbcType="VARCHAR" />
+    <result column="userpass" property="userpass" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    userid, username, userpass
+  </sql>
+
+
+  <select id="loginUser" resultMap="BaseResultMap">
+    select * from a_user where username=#{username} and userpass=#{userpass}
+  </select>
+
+  <select id="queryUser" resultMap="BaseResultMap">
+    select * from a_user
+    <where>
+      <if test="user.username!=null and user.username!=''">
+        and username like '%${user.username}%'
+      </if>
+      <if test="user.userpass!=null and user.userpass!=''">
+        and userpass like '%${user.userpass}%'
+      </if>
+    </where>
+    limit #{sta},#{rows}
+  </select>
+
+  <select id="queryCount" resultType="long">
+    select count(*) from a_user
+  </select>
+
+
+
+
+  <delete id="deleteUser">
+    delete from a_user where userid in (${ids})
+  </delete>
+
+
+<select id="query" resultMap="BaseResultMap">
+  select * from a_user
+</select>
+
+
+  <insert id="add">
+    insert into a_user(username, userpass) values
+     <foreach collection="list" item="l" separator=",">
+       (#{l.username},#{l.userpass})
+     </foreach>
+  </insert>
+
+
+
+
+
+
+
+
+
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from a_user
+    where userid = #{userid,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from a_user
+    where userid = #{userid,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.jk.model.User" >
+    insert into a_user (userid, username, userpass
+      )
+    values (#{userid,jdbcType=INTEGER}, #{username,jdbcType=VARCHAR}, #{userpass,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.jk.model.User" >
+    insert into a_user
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="userid != null" >
+        userid,
+      </if>
+      <if test="username != null" >
+        username,
+      </if>
+      <if test="userpass != null" >
+        userpass,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="userid != null" >
+        #{userid,jdbcType=INTEGER},
+      </if>
+      <if test="username != null" >
+        #{username,jdbcType=VARCHAR},
+      </if>
+      <if test="userpass != null" >
+        #{userpass,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.jk.model.User" >
+    update a_user
+    <set >
+      <if test="username != null" >
+        username = #{username,jdbcType=VARCHAR},
+      </if>
+      <if test="userpass != null" >
+        userpass = #{userpass,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where userid = #{userid,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.jk.model.User" >
+    update a_user
+    set username = #{username,jdbcType=VARCHAR},
+      userpass = #{userpass,jdbcType=VARCHAR}
+    where userid = #{userid,jdbcType=INTEGER}
+  </update>
+</mapper>

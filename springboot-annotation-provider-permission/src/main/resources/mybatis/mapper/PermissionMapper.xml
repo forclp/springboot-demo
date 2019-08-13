@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jk.dao.PermissionMapper" >
+  <resultMap id="BaseResultMap" type="com.jk.model.Permission" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="text" property="text" jdbcType="VARCHAR" />
+    <result column="pid" property="pid" jdbcType="INTEGER" />
+    <result column="url" property="url" jdbcType="VARCHAR" />
+    <result column="state" property="state" jdbcType="VARCHAR" />
+    <result column="description" property="description" jdbcType="VARCHAR" />
+    <result column="checked" property="checked" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, name, text, pid, url, state, description, checked
+  </sql>
+
+
+  <select id="queryTree" resultMap="BaseResultMap">
+    SELECT ap.* FROM a_user au,a_role ar,a_permission ap,a_user_role ur,a_role_per rp
+    WHERE ur.userid=au.userid
+      AND ur.roleid=ar.roleid
+      AND rp.roleid=ar.roleid
+      AND rp.perid=ap.id
+      AND au.userid=#{userid}
+      AND ap.pid=#{id}
+    GROUP BY ap.`name`
+  </select>
+
+   <select id="getPerAll" resultMap="BaseResultMap">
+     select * from a_permission
+   </select>
+
+
+   <delete id="deletePer">
+     delete from a_permission where id in(${ids})
+   </delete>
+
+
+  <select id="queryPer" resultMap="BaseResultMap">
+    select * from a_permission
+     <where>
+       <if test="permission.name!=null and permission.name!=''">
+         and name like '%${permission.name}%'
+       </if>
+     </where>
+    limit #{sta},#{rows}
+  </select>
+
+  <select id="queryPerCount" resultType="long">
+    select count(*) from a_permission
+  </select>
+
+
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from a_permission
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from a_permission
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.jk.model.Permission" >
+    insert into a_permission (id, name, text, 
+      pid, url, state, description, 
+      checked)
+    values (#{id,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, #{text,jdbcType=VARCHAR}, 
+      #{pid,jdbcType=INTEGER}, #{url,jdbcType=VARCHAR}, #{state,jdbcType=VARCHAR}, #{description,jdbcType=VARCHAR}, 
+      #{checked,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.jk.model.Permission" >
+    insert into a_permission
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="name != null" >
+        name,
+      </if>
+      <if test="text != null" >
+        text,
+      </if>
+      <if test="pid != null" >
+        pid,
+      </if>
+      <if test="url != null" >
+        url,
+      </if>
+      <if test="state != null" >
+        state,
+      </if>
+      <if test="description != null" >
+        description,
+      </if>
+      <if test="checked != null" >
+        checked,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="name != null" >
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="text != null" >
+        #{text,jdbcType=VARCHAR},
+      </if>
+      <if test="pid != null" >
+        #{pid,jdbcType=INTEGER},
+      </if>
+      <if test="url != null" >
+        #{url,jdbcType=VARCHAR},
+      </if>
+      <if test="state != null" >
+        #{state,jdbcType=VARCHAR},
+      </if>
+      <if test="description != null" >
+        #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="checked != null" >
+        #{checked,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.jk.model.Permission" >
+    update a_permission
+    <set >
+      <if test="name != null" >
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="text != null" >
+        text = #{text,jdbcType=VARCHAR},
+      </if>
+      <if test="pid != null" >
+        pid = #{pid,jdbcType=INTEGER},
+      </if>
+      <if test="url != null" >
+        url = #{url,jdbcType=VARCHAR},
+      </if>
+      <if test="state != null" >
+        state = #{state,jdbcType=VARCHAR},
+      </if>
+      <if test="description != null" >
+        description = #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="checked != null" >
+        checked = #{checked,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.jk.model.Permission" >
+    update a_permission
+    set name = #{name,jdbcType=VARCHAR},
+      text = #{text,jdbcType=VARCHAR},
+      pid = #{pid,jdbcType=INTEGER},
+      url = #{url,jdbcType=VARCHAR},
+      state = #{state,jdbcType=VARCHAR},
+      description = #{description,jdbcType=VARCHAR},
+      checked = #{checked,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

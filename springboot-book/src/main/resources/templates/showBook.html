@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <!-- easyui包 -->
+    <link rel="stylesheet" type="text/css" href="../js/themes/default/easyui.css">
+    <link rel="stylesheet" type="text/css" href="../js/themes/icon.css">
+    <script type="text/javascript" src="../js/jquery.min.js"></script>
+    <script type="text/javascript" src="../js/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="../js/locale/easyui-lang-zh_CN.js"></script>
+    <!--图片包  -->
+    <script type="text/javascript" src="../jslib/uploadify/jquery.uploadify.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="../jslib/uploadify/uploadify.css" />
+</head>
+<body>
+<div id="p" class="easyui-panel" title="条件查询"
+     style="width:1000px;height:200px;padding:10px;background:#fafafa;"
+     data-options="iconCls:'icon-save',closable:true,
+                collapsible:true,minimizable:true,maximizable:true">
+    <form>
+        日期:<input type="date"  name="startdate" style="width:200px;"/>--<input type="date" name="enddate" style="width:200px;"/><br>
+        <a id="btn" href="javaScript:queryData()" class="easyui-linkbutton" data-options="iconCls:'icon-search'">查询</a>
+    </form>
+</div>
+<table id="dg1"></table>
+<div id="addDialogId"></div>
+<script type="text/javascript">
+
+    $(function(){
+        queryData();
+    })
+
+    function queryData() {
+        $('#dg1').datagrid({
+                url: '../book/queryBook',
+                fitColumns: true,
+                pagination: true,
+                rownumbers: true,
+                pageNumber: 1,
+                pageSize: 2,
+                pageList: [2, 5, 10, 20, 50],
+                columns: [
+                    [
+
+                        {field: 'bookid', checkbox: true, title: '书籍编号', width: 100},
+                        {field: 'bookname', title: '书籍名称', width: 100},
+
+                        {field: 'price', title: '书籍价格', width: 100},
+                        {
+                            field: 'booktype', title: '书籍类型', width: 100, formatter: function (value, row, index) {
+                                if (value == 1) {
+                                    return "小说";
+                                }
+                                if (value == 2) {
+                                    return "名著";
+                                }
+                            }
+                        },
+                        {field: 'des', title: '书籍描述', width: 100},
+                        {field: 'bookdate', title: '书籍日期', width: 100},
+                        /*{field:'cz',title:'操作',width:100,formatter: function(value,row,index){
+                        return '<input type="button" value="修改" onclick="upd('+row.bookid+')">';
+                    }
+                }*/
+                    ]
+                ],
+
+                queryParams: {
+                    'startdate': $("[name='startdate']").val(),
+                    'enddate': $("[name='enddate']").val(),
+                },
+
+                toolbar: [
+                    {
+                        iconCls: 'icon-edit',
+                        text: "修改",
+                        handler: function () {
+                            var arr = $("#dg1").datagrid('getSelections');
+                            var ids = "";
+                            var count = 0;
+                            for (var i = 0; i < arr.length; i++) {
+                                ids = +arr[i].bookid;
+                                count++;
+                            }
+                            alert(ids)
+                            if (count == 1) {
+                                $('#addDialogId').dialog({
+                                        title: '修改图书',
+                                        width: 400,
+                                        height: 200,
+                                        closed: false,
+                                        cache: false,
+                                        href: '../book/toUpdateBook?bookid=' + ids,
+                                        modal: true,
+                                        buttons: [
+                                            {
+                                                text: '保存',
+                                                handler: function () {
+                                                    $('#addFormId').form('submit', {
+                                                        url: "../book/updateBook",
+                                                        type: "post",
+                                                        data: $("#addFormId").serialize(),
+                                                        success: function () {
+                                                            $.messager.alert('提示', '新增成功');
+                                                            $('#addDialogId').window('close');
+                                                            $('#dg1').datagrid('reload');
+                                                        }
+                                                    })
+                                                }
+                                            }, {
+                                                text: '关闭',
+                                                handler: function () {
+                                                    $('#addDialogId').window('close');
+                                                }
+                                            }
+                                        ]
+                                    }
+                                );
+                                //$('#dd').dialog('refresh', 'new_content.php');
+                            } else {
+                                $.messager.alert('警告', '选择有误', 'error');
+                            }
+                        }
+                    }
+                    , '-', {
+                        iconCls: 'icon-remove',
+                        text: "删除",
+                        handler: function () {
+                            var arr = $("#dg1").datagrid('getSelections');
+                            var ids = "";
+                            for (var i = 0; i < arr.length; i++) {
+                                ids += "," + arr[i].bookid;
+                            }
+                            ids = ids.substr(1);
+                            if (ids == "") {
+                                $.messager.alert('警告', '请选择要删除的数据', 'error');
+                            } else {
+                                $.messager.confirm('确认', '您确认想要删除' + ids + '记录吗？', function (r) {
+                                        if (r) {
+                                            alert('删除成功');
+                                            $.get("../book/deleteBook", {"ids": ids}, function () {
+                                                $('#dg1').datagrid('reload');
+                                            });
+                                        }
+                                    }
+                                );
+                            }
+                        }
+                    }, '-', {
+                        iconCls: 'icon-add',
+                        text: "新增",
+                        handler: function () {
+                            $('#addDialogId').dialog(
+                                {
+                                    title: '新增',
+                                    width: 600,
+                                    height: 600,
+                                    closed: false,
+                                    cache: false,
+                                    href: '../book/toAddBook',
+                                    modal: true,
+                                    buttons: [
+                                        {
+                                            text: '保存',
+                                            handler: function () {
+                                                $('#addFormId').form('submit', {
+                                                        url: "../book/addBook",
+                                                        type: "post",
+                                                        data: $("#addDialogId").serialize(),
+                                                        success: function () {
+                                                            $.messager.alert('提示', '新增成功');
+                                                            $('#addDialogId').window('close');
+                                                            $('#dg1').datagrid('reload');
+                                                        }
+                                                    }
+                                                )
+                                            }
+                                        }, {
+                                            text: '关闭',
+                                            handler: function () {
+                                                $('#addDialogId').window('close');
+                                            }
+                                        }
+                                    ]
+                                }
+                            );
+                            //$('#addstoreFormId').dialog('refresh', '../storeAction!querystore.action');
+                        }
+                    }
+                ]
+            }
+        );
+    }
+
+
+    function upd(id,states){
+        $.ajax({
+            url:"${pageContext.request.contextPath}/storeAction!updatestoreStates.action?store.store_id="+id+"&store.store_status="+states,
+            type:"post",
+            success:function(){
+                $('#dg1').datagrid('reload');    // 重新载入当前页面数据
+            },
+            error:function(){
+                alert("修改状态失败");
+            }
+        })
+    }
+</script>
+</body>
+</html>
